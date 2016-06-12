@@ -1,0 +1,9 @@
+# depslib dependency file v1.0
+1465414584 source:/home/mateus/Documents/ProjetoIPC/main.c
+	<stdio.h>
+	<stdlib.h>
+
+1465700034 source:/home/mateus/Projetos/IPCPolinomios/main.c
+	<stdio.h>
+	<stdlib.h>
+
