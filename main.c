@@ -13,30 +13,60 @@ int main()
 
     char polinomio1[100];
     char polinomio2[100];
+    strcpy(polinomio1, "");
+    strcpy(polinomio2, "");
+
+
+    setbuf(stdin, NULL);
     scanf("%s",polinomio1);
+    setbuf(stdin, NULL);
     scanf("%s",polinomio2);
 
     int tamanho1 = formulasSize(polinomio1);
     int tamanho2 = formulasSize(polinomio2);
-    int tamanhoPolinomios = tamanho1;
-    if(tamanho2 > tamanho1){
-        tamanhoPolinomios = tamanho2;
+
+    int tamanho;
+
+    if(tamanho1 > tamanho2)
+        tamanho = tamanho1;
+    else
+        tamanho = tamanho2;
+
+    struct quadro quadros1[tamanho];
+    struct quadro quadros2[tamanho];
+
+    int i = 0;
+    int ex = 0;
+    for(i = tamanho-1; i >= 0; i--){
+        quadros1[i].constante = 0;
+        quadros1[i].expoente = ex;
+        quadros2[i].constante = 0;
+        quadros2[i].expoente = ex;
+        ex++;
     }
 
-    int inicio1 = tamanhoPolinomios - tamanho1;
-    int inicio2 = tamanhoPolinomios - tamanho2;
+    lerPolinomio(polinomio1, quadros1, 0, tamanho);
+    lerPolinomio(polinomio2, quadros2, 0, tamanho);
 
-    struct quadro quadros1[tamanhoPolinomios];
-    struct quadro quadros2[tamanhoPolinomios];
+    printf("\nPolinomio 1: ");
+    mostraPolinomio(quadros1,tamanho);
 
-    //populaResto(quadros1, tamanho1, tamanhoPolinomios);
-    //populaResto(quadros2, tamanho2, tamanhoPolinomios);
-    //printf("%s\n", polinomio);
-    lerPolinomio(polinomio1, quadros1,inicio1, tamanhoPolinomios);
-    lerPolinomio(polinomio2, quadros2, inicio2, tamanhoPolinomios);
+    printf("Polinomio 2: ");
+    mostraPolinomio(quadros2,tamanho);
 
-    mostraPolinomio(quadros1,tamanhoPolinomios);
-    mostraPolinomio(quadros2,tamanhoPolinomios);
+    struct quadro resultado[tamanho];
+    soma(quadros1, quadros2, resultado, tamanho);
+    printf("Soma: ");
+    mostraPolinomio(resultado,tamanho);
+
+    sub(quadros1, quadros2, resultado, tamanho);
+    printf("Subtr: ");
+    mostraPolinomio(resultado,tamanho);
+
+    struct quadro r2[(tamanho*2)];
+    mult(quadros1, quadros2, r2, tamanho);
+    printf("Mult: ");
+    mostraPolinomio(r2,tamanho);
 
     return 0;
 }
@@ -64,11 +94,14 @@ void mostraPolinomio(struct quadro *q, int tamanho){
         //if(q[i].constante != 0){
 
             printf("%+d", q[i].constante);
-            printf("x");
-            if(q[i].expoente < 0)
-                printf("%+d",q[i].expoente);
-            else
-                printf("%d",q[i].expoente);
+
+            //if(q[i].expoente != 0){
+                printf("x");
+                if(q[i].expoente < 0)
+                    printf("%+d",q[i].expoente);
+                else
+                    printf("%d",q[i].expoente);
+            //}
         //}
     }
     printf("\n");
@@ -78,43 +111,41 @@ int formulasSize(char *polinomio){
     int qArr = 1;
     int i;
     int tamanhoStr = strlen(polinomio) +1;
-    char expoente[100];
+    char expoente[10];
     limpa(expoente);
+    int maior = 0;
 
         for(i = 1; i < tamanhoStr; i++){
-        //if(polinomio[i] == '-' || polinomio[i] == '+')
-          //  qArr++;
-        if(polinomio[i] == 'x'){
-            for(i = (i+1); i < tamanhoStr; i++){
-                if(polinomio[i] == '-' || polinomio[i] == '+')
-                    break;
-                else
-                    junta(expoente, polinomio[i]);
+            limpa(expoente);
 
+            if(polinomio[i] == 'x'){
+                for(i = (i+1); i < tamanhoStr; i++){
+                    if(polinomio[i] == '-' || polinomio[i] == '+' || '\0')
+                        break;
+                    else
+                        junta(expoente, polinomio[i]);
             }
-            break;
+            if(i == 0)
+                maior = atoi(expoente);
+            if(atoi(expoente) > maior)
+                maior = atoi(expoente);
         }
             //printf("%c",polinomio[(i+1)]);
     }
 
-    qArr = atoi(expoente);
+    qArr = maior;
     qArr++;
 
     return qArr;
 }
+
 void lerPolinomio(char *polinomio, struct quadro *quadros, int inicio, int tMaior){
 
-    char parte [100];
-    char constante[100];
-    char expoente[100];
-    int stLen = ((sizeof(quadros)) / 8);;
+    char parte [3];
+    char constante[3];
+    char expoente[3];
     int indice = 0;
-    int indQ = inicio;
     int tamanhoStr = strlen(polinomio) + 1;
-
-    printf("Inicio %d\n", ((inicio)));
-
-
 
     limpa(parte);
 
@@ -145,21 +176,13 @@ void lerPolinomio(char *polinomio, struct quadro *quadros, int inicio, int tMaio
                         junta(expoente, parte[j]);
                     }
 
+                int p = tMaior - (atoi(expoente)) - 1;
 
-                    if(indQ > 0 && atoi(expoente) >= 0){
-                        int diferenca = (quadros[indQ-1].expoente) - atoi(expoente) -1;
-                        while(diferenca > 0){
-                            quadros[indQ].constante = 0;
-                            quadros[indQ].expoente = quadros[(indQ-1)].expoente - 1;
-                            diferenca --;
-                            indQ++;
-                        }
-                    }
+                printf("\n");
+                printf("C %c \nE %c\n",constante[0],expoente[0]);
 
-
-                quadros[indQ].constante = atoi(constante);
-                quadros[indQ].expoente = atoi(expoente);
-                indQ++;
+                quadros[p].constante = 1;
+                quadros[p].constante = atoi(constante);
 
                 copia(parte, polinomio[indice]);
             }
@@ -168,18 +191,34 @@ void lerPolinomio(char *polinomio, struct quadro *quadros, int inicio, int tMaio
             }
         }
     }
-    int l;
-    for(l = 0; l < inicio; l++){
-        quadros[l].constante = 0;
-        quadros[l].expoente = tMaior - l-1;
+}
+void soma(struct quadro *q1, struct quadro *q2, struct quadro *resultado, int tamanho){
+    int i = 0;
+    for(;i < tamanho; i++){
+        resultado[i].expoente = q1[i].expoente;
+        resultado[i].constante = q1[i].constante + q2[i].constante;
     }
-
 
 }
-void populaResto(struct quadro *q, int inicio, int fim){
-
-    for(;inicio < fim; inicio++){
-        q[inicio].constante = 0;
-        q[inicio].expoente = q[(inicio -1)].expoente + 1;
+void sub(struct quadro *q1, struct quadro *q2, struct quadro *resultado, int tamanho){
+    int i = 0;
+    for(;i < tamanho; i++){
+        resultado[i].expoente = q1[i].expoente;
+        resultado[i].constante = q1[i].constante - q2[i].constante;
     }
+
+}
+void mult(struct quadro *q1, struct quadro *q2, struct quadro *resultado, int tamanho){
+    int i = 0;
+    int j = 0;
+        for(;i < tamanho; i++){
+            for(;j < tamanho; j++){
+                int expoente = q1[i].expoente + q2[i].expoente;
+                int indice = abs(expoente - (tamanho *2));
+
+                resultado[indice].expoente = expoente;
+                resultado[indice].constante = q1[i].constante - q2[i].constante;
+            }
+    }
+
 }
