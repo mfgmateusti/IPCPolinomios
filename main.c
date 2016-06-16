@@ -1,26 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct quadro{
+struct termo{
     int constante;
     int expoente;
 };
 
+typedef struct termo termo;
+
 int main()
 {
 
-    struct quadro q[5];
+    struct termo t[5];
 
     char polinomio1[100];
     char polinomio2[100];
-    strcpy(polinomio1, "");
-    strcpy(polinomio2, "");
+    strcpy(polinomio1, "3x2+2x1+5");
+    strcpy(polinomio2, "3x3+2");
 
-
-    setbuf(stdin, NULL);
+    /*setbuf(stdin, NULL);
     scanf("%s",polinomio1);
     setbuf(stdin, NULL);
-    scanf("%s",polinomio2);
+    scanf("%s",polinomio2);*/
 
     int tamanho1 = formulasSize(polinomio1);
     int tamanho2 = formulasSize(polinomio2);
@@ -32,41 +33,36 @@ int main()
     else
         tamanho = tamanho2;
 
-    struct quadro quadros1[tamanho];
-    struct quadro quadros2[tamanho];
+    struct termo termos1[tamanho];
+    struct termo termos2[tamanho];
+    setTermos(termos1, tamanho);
+    setTermos(termos2, tamanho);
 
-    int i = 0;
-    int ex = 0;
-    for(i = tamanho-1; i >= 0; i--){
-        quadros1[i].constante = 0;
-        quadros1[i].expoente = ex;
-        quadros2[i].constante = 0;
-        quadros2[i].expoente = ex;
-        ex++;
-    }
-
-    lerPolinomio(polinomio1, quadros1, 0, tamanho);
-    lerPolinomio(polinomio2, quadros2, 0, tamanho);
+    lerPolinomio(polinomio1, termos1, 0, tamanho);
+    lerPolinomio(polinomio2, termos2, 0, tamanho);
 
     printf("\nPolinomio 1: ");
-    mostraPolinomio(quadros1,tamanho);
+    mostraPolinomio(termos1,tamanho);
 
     printf("Polinomio 2: ");
-    mostraPolinomio(quadros2,tamanho);
+    mostraPolinomio(termos2,tamanho);
 
-    struct quadro resultado[tamanho];
-    soma(quadros1, quadros2, resultado, tamanho);
+    struct termo resultado[tamanho];
+    soma(termos1, termos2, resultado, tamanho);
     printf("Soma: ");
     mostraPolinomio(resultado,tamanho);
 
-    sub(quadros1, quadros2, resultado, tamanho);
+    sub(termos1, termos2, resultado, tamanho);
     printf("Subtr: ");
     mostraPolinomio(resultado,tamanho);
 
-    struct quadro r2[(tamanho*2)];
-    mult(quadros1, quadros2, r2, tamanho);
+    int tR = (tamanho)+(tamanho)-1;
+
+    struct termo r2[tR];
+    setTermos(r2, tR);
+    mult(termos1, termos2, r2, tamanho);
     printf("Mult: ");
-    mostraPolinomio(r2,tamanho);
+    mostraPolinomio(r2,tR);
 
     return 0;
 }
@@ -86,23 +82,36 @@ void copia(char *s, char c){
 void limpa(char *s){
     strcpy(s, "");
 }
-void mostraPolinomio(struct quadro *q, int tamanho){
+void setTermos(termo *t, int tamanho){
+    int ex = 0;
+    int i;
+    tamanho--;
+
+    for(i = tamanho; i >= 0; i--){
+        t[i].constante = 0;
+        t[i].expoente = ex;
+        ex++;
+    }
+
+}
+
+void mostraPolinomio(struct termo *t, int tamanho){
 
     int i = 0;
     for(i = 0; i < tamanho; i++){
 
-        //if(q[i].constante != 0){
+        if(t[i].constante != 0){
 
-            printf("%+d", q[i].constante);
+            printf("%+d", t[i].constante);
 
-            //if(q[i].expoente != 0){
+            if(t[i].expoente != 0){
                 printf("x");
-                if(q[i].expoente < 0)
-                    printf("%+d",q[i].expoente);
+                if(t[i].expoente < 0)
+                    printf("%+d",t[i].expoente);
                 else
-                    printf("%d",q[i].expoente);
-            //}
-        //}
+                    printf("%d",t[i].expoente);
+            }
+        }
     }
     printf("\n");
 }
@@ -139,7 +148,7 @@ int formulasSize(char *polinomio){
     return qArr;
 }
 
-void lerPolinomio(char *polinomio, struct quadro *quadros, int inicio, int tMaior){
+void lerPolinomio(char *polinomio, struct termo *termos, int inicio, int tMaior){
 
     char parte [3];
     char constante[3];
@@ -178,11 +187,7 @@ void lerPolinomio(char *polinomio, struct quadro *quadros, int inicio, int tMaio
 
                 int p = tMaior - (atoi(expoente)) - 1;
 
-                printf("\n");
-                printf("C %c \nE %c\n",constante[0],expoente[0]);
-
-                quadros[p].constante = 1;
-                quadros[p].constante = atoi(constante);
+                termos[p].constante = atoi(constante);
 
                 copia(parte, polinomio[indice]);
             }
@@ -192,32 +197,41 @@ void lerPolinomio(char *polinomio, struct quadro *quadros, int inicio, int tMaio
         }
     }
 }
-void soma(struct quadro *q1, struct quadro *q2, struct quadro *resultado, int tamanho){
+void soma(struct termo *t1, struct termo *t2, struct termo *resultado, int tamanho){
     int i = 0;
     for(;i < tamanho; i++){
-        resultado[i].expoente = q1[i].expoente;
-        resultado[i].constante = q1[i].constante + q2[i].constante;
+        resultado[i].expoente = t1[i].expoente;
+        resultado[i].constante = t1[i].constante + t2[i].constante;
     }
 
 }
-void sub(struct quadro *q1, struct quadro *q2, struct quadro *resultado, int tamanho){
+void sub(struct termo *t1, struct termo *t2, struct termo *resultado, int tamanho){
     int i = 0;
     for(;i < tamanho; i++){
-        resultado[i].expoente = q1[i].expoente;
-        resultado[i].constante = q1[i].constante - q2[i].constante;
+        resultado[i].expoente = t1[i].expoente;
+        if(t1[i].constante == 0)
+            resultado[i].constante = t2[i].constante;
+        else
+            resultado[i].constante = t1[i].constante - t2[i].constante;
     }
 
 }
-void mult(struct quadro *q1, struct quadro *q2, struct quadro *resultado, int tamanho){
+void mult(struct termo *t1, struct termo *t2, struct termo *resultado, int tamanho){
     int i = 0;
     int j = 0;
-        for(;i < tamanho; i++){
-            for(;j < tamanho; j++){
-                int expoente = q1[i].expoente + q2[i].expoente;
-                int indice = abs(expoente - (tamanho *2));
 
-                resultado[indice].expoente = expoente;
-                resultado[indice].constante = q1[i].constante - q2[i].constante;
+        for(i = 0;i < tamanho; i++){
+            for(j = 0;j < tamanho; j++){
+
+                if(t1[i].constante != 0 && t2[j].constante != 0){
+
+                    int constante = t1[i].constante * t2[j].constante;
+                    int expoente = t2[i].expoente + t2[j].expoente;
+                    int indice = tamanho+tamanho-expoente-2;
+
+                    resultado[indice].constante += constante;
+                    resultado[indice].expoente = expoente;
+                }
             }
     }
 
