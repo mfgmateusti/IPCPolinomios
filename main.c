@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 struct termo{
-    int constante;
+    double constante;
     int expoente;
 };
 
@@ -15,8 +15,8 @@ int main()
 
     char polinomio1[100];
     char polinomio2[100];
-    strcpy(polinomio1, "3x2+2x1+5");
-    strcpy(polinomio2, "3x3+2");
+    strcpy(polinomio1, "3x4+2x1+5");
+    strcpy(polinomio2, "1x1+1");
 
     /*setbuf(stdin, NULL);
     scanf("%s",polinomio1);
@@ -33,8 +33,8 @@ int main()
     else
         tamanho = tamanho2;
 
-    struct termo termos1[tamanho];
-    struct termo termos2[tamanho];
+    termo *termos1 = malloc(tamanho*sizeof(termo));
+    termo *termos2 = malloc(tamanho*sizeof(termo));
     setTermos(termos1, tamanho);
     setTermos(termos2, tamanho);
 
@@ -47,8 +47,13 @@ int main()
     printf("Polinomio 2: ");
     mostraPolinomio(termos2,tamanho);
 
-    struct termo resultado[tamanho];
-    soma(termos1, termos2, resultado, tamanho);
+    termo *resultado = malloc(tamanho*sizeof(termo));
+    termo *resto = malloc(tamanho*sizeof(termo));
+
+    setTermos(resultado, tamanho);
+    setTermos(resto, tamanho);
+
+    /*soma(termos1, termos2, resultado, tamanho);
     printf("Soma: ");
     mostraPolinomio(resultado,tamanho);
 
@@ -58,13 +63,101 @@ int main()
 
     int tR = (tamanho)+(tamanho)-1;
 
-    struct termo r2[tR];
+    termo *r2 = malloc(tR*sizeof(termo));
     setTermos(r2, tR);
     mult(termos1, termos2, r2, tamanho);
     printf("Mult: ");
     mostraPolinomio(r2,tR);
+    */
+    divisao(termos1, termos2, resultado, resto, tamanho);
+
+    printf("Divisao: ");
+    mostraPolinomio(resultado, tamanho);
+    printf("Resto: ");
+    mostraPolinomio(resto, tamanho);
+
+    //printf("%.2f",resto[0].expoente);
+
+    free(termos1);
+    free(termos2);
+    free(resultado);
+    free(resto);
 
     return 0;
+}
+
+void divisao(termo *t1, termo *t2, termo *resultado, termo *resto, int tamanho){
+    int i = 0;
+    int j = 0;
+    int fT = 0;
+
+    termoCopy(t1, resto, tamanho);
+
+    while(1){
+        if(t2[fT].constante == 0)
+            fT++;
+        else
+            break;
+    }
+
+    //printf("Primeiro termo do dividendo %dx%d \n",t2[fT].constante,t2[fT].expoente);
+
+    int indice = 0;
+
+    while(indice < tamanho){
+
+        for(i = 0; i < tamanho; i++){
+
+            indice++;
+
+            termo *temp1 = malloc(tamanho*sizeof(termo));
+            setTermos(temp1, tamanho);
+
+            if(resto[i].constante!=0){
+                if(t2[fT].expoente >= resto[i].expoente)
+                    break;
+
+                //printf("\n---Eliminando o %dx%d---\n",t1[i].constante,t1[i].expoente);
+
+                double rCons = ((double)resto[i].constante) / ((double) t2[fT].expoente);
+                int rExp = resto[i].expoente - t2[fT].expoente;
+
+                if(t1[i].constante > 0){
+                    resultado[tamanho-rExp-1].constante += rCons;
+                        int k = 0;
+                        for(k = 0; k< tamanho; k++){
+                            int indice = t2[k].expoente + rExp;
+                            temp1[tamanho-indice-1].constante += t2[k].constante * rCons;
+                        }
+                    }
+                else{
+                    resultado[tamanho-rExp-1].constante -= rCons;
+                    int k = 0;
+                        for(k = 0; k< tamanho; k++){
+                            int indice = t2[k].expoente + rExp;
+                            temp1[tamanho-indice-1].constante += t2[k].constante * rCons;
+                    }
+                }
+
+                //printf("Divisor = %.2fx%d\n",rCons,rExp);
+
+                termo *temp2 = malloc(tamanho*sizeof(termo));
+                setTermos(temp2, tamanho);
+                sub(resto, temp1, temp2,tamanho);
+
+                termoCopy(temp2, resto, tamanho);
+                break;
+            }
+        }
+    }
+}
+
+void termoCopy(termo *src, termo *dest, int size){
+    int a =0;
+    for(a = 0; a< size; a++){
+        dest[a].constante = src[a].constante;
+        dest[a].expoente = src[a].expoente;
+    }
 }
 
 void junta(char *s, char c){
@@ -101,8 +194,11 @@ void mostraPolinomio(struct termo *t, int tamanho){
     for(i = 0; i < tamanho; i++){
 
         if(t[i].constante != 0){
-
-            printf("%+d", t[i].constante);
+            double fractionalPart =  fmod(t[i].constante, 1.0);
+            if(fractionalPart == ((double)0))
+                printf("%+.0f", t[i].constante);
+            else
+                printf("%+.2f", t[i].constante);
 
             if(t[i].expoente != 0){
                 printf("x");
@@ -139,7 +235,6 @@ int formulasSize(char *polinomio){
             if(atoi(expoente) > maior)
                 maior = atoi(expoente);
         }
-            //printf("%c",polinomio[(i+1)]);
     }
 
     qArr = maior;
