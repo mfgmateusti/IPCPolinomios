@@ -14,7 +14,7 @@ int main()
     char polinomio2[100];
 
     printf("Digite a operacao..\n1-Soma\n2-Subtracao\n3-Multiplicacao\n4-Divisao\n5-Sair\n");
-/*
+
     int operacao = 4;
     scanf("%d", &operacao);
     printf("Digite o primeiro polinomio: ");
@@ -22,9 +22,7 @@ int main()
     scanf("%s",&polinomio1);
     printf("Digite o segundo polinomio: ");
     setbuf(stdin, NULL);
-    scanf("%s",&polinomio2);*/
-    strcpy(polinomio1,"4x3+2x1");
-    strcpy(polinomio2,"1x1+1");
+    scanf("%s",&polinomio2);
 
     int tamanho1 = formulasSize(polinomio1);
     int tamanho2 = formulasSize(polinomio2);
@@ -49,85 +47,74 @@ int main()
     printf("Polinomio 2: ");
     mostraPolinomio(termos2, tamanho);
 
-    termo *resultado, *resto;
-    resultado = malloc(tamanho*(sizeof(termo)));
-    resto = malloc(tamanho*(sizeof(termo)));
-    setTermos(resultado, tamanho);
-    setTermos(resto, tamanho);
-
-    divisao(termos1, termos2, resultado, resto,tamanho);
-    mostraPolinomio(resultado, tamanho);
-    mostraPolinomio(resto,tamanho);
-
-    //int mostrarMenu = 0;
-/*
+    int mostrarMenu = 0;
     while(1){
 
-    if(mostrarMenu == 1){
-        printf("Digite uma nova opcao:\n1-Soma\n2-Subtracao\n3-Multiplicacao\n4-Divisao\n5-Sair\n");
-        scanf("%d",&operacao);
-    }
+        if(mostrarMenu == 1){
+            printf("Digite uma nova opcao:\n1-Soma\n2-Subtracao\n3-Multiplicacao\n4-Divisao\n5-Sair\n");
+            scanf("%d",&operacao);
+        }
 
-    while(operacao <  0 && operacao > 5){
-        printf("Digite uma opcao valida!\n1-Soma\n2-Subtracao\n3-Multiplicacao\n4-Divisao\n5-Sair\n");
-        scanf("%d",&operacao);
-    }
-    if(operacao == 5){
-        printf("Programa finalizado!");
-        free(termos1);
-        free(termos2);
-        return 0;
-    }
-    if(operacao == 1){
-        termo *resultado = malloc(tamanho*sizeof(termo));
-        setTermos(resultado,tamanho);
-        soma(termos1, termos2, resultado, tamanho);
-        printf("Soma: ");
-        mostraPolinomio(resultado,tamanho);
-        mostrarMenu = 1;
-        free(resultado);
-    }
-    else if(operacao == 2){
-        termo *resultado = malloc(tamanho*sizeof(termo));
-        setTermos(resultado,tamanho);
-        sub(termos1, termos2, resultado, tamanho);
-        printf("Subtracao: ");
-        mostraPolinomio(resultado,tamanho);
-        mostrarMenu = 1;
-        free(resultado);
-    }
-    else if(operacao == 3){
-        int tR = (tamanho)+(tamanho)-1;
-        termo *resultado = malloc(tR*sizeof(termo));
-        setTermos(resultado,tR);
-        mult(termos1, termos2, resultado, tamanho);
-        printf("Mult: ");
-        mostraPolinomio(resultado,tR);
-        mostrarMenu = 1;
-        free(resultado);
-    }
-    else if(operacao == 4){
-        termo *resultado = malloc(tamanho*sizeof(termo));
-        termo *resto = malloc(tamanho*sizeof(termo));
-        setTermos(resto, tamanho);
-        setTermos(resultado, tamanho);
-        divisao(termos1, termos2, resultado, resto, tamanho);
+        while(operacao <  0 && operacao > 5){
+            printf("Digite uma opcao valida!\n1-Soma\n2-Subtracao\n3-Multiplicacao\n4-Divisao\n5-Sair\n");
+            scanf("%d",&operacao);
+        }
+        if(operacao == 5){
+            printf("Programa finalizado!");
+            free(termos1);
+            free(termos2);
+            return 0;
+        }
+        if(operacao == 1){
+            termo *resultado = malloc(tamanho*sizeof(termo));
+            setTermos(resultado,tamanho);
+            soma(termos1, termos2, resultado, tamanho);
+            printf("Soma: ");
+            mostraPolinomio(resultado,tamanho);
+            mostrarMenu = 1;
+            free(resultado);
+        }
+        else if(operacao == 2){
+            termo *resultado = malloc(tamanho*sizeof(termo));
+            setTermos(resultado,tamanho);
+            sub(termos1, termos2, resultado, tamanho);
+            printf("Subtracao: ");
+            mostraPolinomio(resultado,tamanho);
+            mostrarMenu = 1;
+            free(resultado);
+        }
+        else if(operacao == 3){
+            int tR = (tamanho)+(tamanho)-1;
+            termo *resultado = malloc(tR*sizeof(termo));
+            setTermos(resultado,tR);
+            mult(termos1, termos2, resultado, tamanho);
+            printf("Mult: ");
+            mostraPolinomio(resultado,tR);
+            mostrarMenu = 1;
+            free(resultado);
+        }
+        else if(operacao == 4){
+            termo *resultado = malloc(tamanho*sizeof(termo));
+            termo *resto = malloc(tamanho*sizeof(termo));
+            setTermos(resto, tamanho);
+            setTermos(resultado, tamanho);
+            divisao(termos1, termos2, resultado, resto, tamanho);
 
-        printf("Divisao: ");
-        mostraPolinomio(resultado, tamanho);
+            printf("Divisao: ");
+            mostraPolinomio(resultado, tamanho);
 
-        printf("Resto: ");
-        mostraPolinomio(resto, tamanho);
-        free(resultado);
-        free(resto);
-        mostrarMenu = 1;
+            printf("Resto: ");
+            mostraPolinomio(resto, tamanho);
+            free(resultado);
+            free(resto);
+            mostrarMenu = 1;
+        }
+        else{
+            printf("Digite uma operacao valida: ");
+            scanf("%d",&operacao);
+        }
     }
-    else{
-        printf("Digite uma operacao valida: ");
-        scanf("%d",&operacao);
-    }
-    }
-    return 0;*/
+    return 0;
 }
 
 void divisao(termo *t1, termo *t2, termo *resultado, termo *resto, int tamanho){
@@ -148,12 +135,9 @@ void divisao(termo *t1, termo *t2, termo *resultado, termo *resto, int tamanho){
     for(a = 0; a < primeiroT+1; a++){
         if(resto[a].constante != (double)0){
 
-            printf("Zerando o termo %.2fx%d\n",resto[a].constante, resto[a].expoente);
             double constanteDivisor = (double)resto[a].constante / (double)primeiroTermo[0].constante;
-            printf("%d - %d\n",resto[a].expoente,primeiroTermo[0].expoente);
             int expoenteDivisor = resto[a].expoente - primeiroTermo[0].expoente;
             resultado[tamanho-expoenteDivisor-1].constante = constanteDivisor;
-            printf("Divisor encontrado: %.2fx%d\n",constanteDivisor,expoenteDivisor);
 
             termo *temp1;
             temp1 = malloc(tamanho*sizeof(termo));
@@ -171,12 +155,6 @@ void divisao(termo *t1, termo *t2, termo *resultado, termo *resto, int tamanho){
                     temp1[indice].expoente = expoente;
                 }
             }
-
-            printf("Subtraindo resto pelo resultante...");
-            mostraPolinomio(resto, tamanho);
-            printf("Temp1: ");
-
-            mostraPolinomio(temp1, tamanho);
 
             termo *temp2;
             temp2 = malloc(tamanho*sizeof(termo));
