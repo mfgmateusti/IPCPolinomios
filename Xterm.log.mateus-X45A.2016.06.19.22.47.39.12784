@@ -1,0 +1,15 @@
+^C
+^C
+4
+5
+5Divisor encontrado: 3.00x2
+Subtraindo resto pelo resultante...+3x2+2x1+1
+Temp1: +3x2
+Divisor encontrado: 2.00x1
+Subtraindo resto pelo resultante...+2x1+1
+Temp1: +2x2+2x1
+Divisor encontrado: 1.00x0
+Subtraindo resto pelo resultante...-2x2+1
+Temp1: +1x1+1
++3x2+2x1+1
+-2x2-1x1

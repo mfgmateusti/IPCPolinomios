@@ -14,15 +14,17 @@ int main()
     char polinomio2[100];
 
     printf("Digite a operacao..\n1-Soma\n2-Subtracao\n3-Multiplicacao\n4-Divisao\n5-Sair\n");
-
-    int operacao = 0;
+/*
+    int operacao = 4;
     scanf("%d", &operacao);
     printf("Digite o primeiro polinomio: ");
     setbuf(stdin, NULL);
     scanf("%s",&polinomio1);
     printf("Digite o segundo polinomio: ");
     setbuf(stdin, NULL);
-    scanf("%s",&polinomio2);
+    scanf("%s",&polinomio2);*/
+    strcpy(polinomio1,"4x3+2x1");
+    strcpy(polinomio2,"1x1+1");
 
     int tamanho1 = formulasSize(polinomio1);
     int tamanho2 = formulasSize(polinomio2);
@@ -41,8 +43,24 @@ int main()
 
     lerPolinomio(polinomio1, termos1, 0, tamanho);
     lerPolinomio(polinomio2, termos2, 0, tamanho);
-    int mostrarMenu = 0;
 
+    printf("Polinomio 1: ");
+    mostraPolinomio(termos1, tamanho);
+    printf("Polinomio 2: ");
+    mostraPolinomio(termos2, tamanho);
+
+    termo *resultado, *resto;
+    resultado = malloc(tamanho*(sizeof(termo)));
+    resto = malloc(tamanho*(sizeof(termo)));
+    setTermos(resultado, tamanho);
+    setTermos(resto, tamanho);
+
+    divisao(termos1, termos2, resultado, resto,tamanho);
+    mostraPolinomio(resultado, tamanho);
+    mostraPolinomio(resto,tamanho);
+
+    //int mostrarMenu = 0;
+/*
     while(1){
 
     if(mostrarMenu == 1){
@@ -109,11 +127,12 @@ int main()
         scanf("%d",&operacao);
     }
     }
-    return 0;
+    return 0;*/
 }
 
 void divisao(termo *t1, termo *t2, termo *resultado, termo *resto, int tamanho){
-    termo *primeiroTermo = malloc(sizeof(termo));
+    termo *primeiroTermo;
+    primeiroTermo = malloc(sizeof(termo));
     int primeiroT = 0;
     int a;
     for(a = 0; a < tamanho; a++){
@@ -121,23 +140,28 @@ void divisao(termo *t1, termo *t2, termo *resultado, termo *resto, int tamanho){
             primeiroTermo[0].constante = t2[a].constante;
             primeiroTermo[0].expoente = t2[a].expoente;
             primeiroT = a;
+            break;
         }
     }
     termoCopy(t1, resto, tamanho);
 
     for(a = 0; a < primeiroT+1; a++){
-        if(resto[a].constante != 0){
+        if(resto[a].constante != (double)0){
 
+            printf("Zerando o termo %.2fx%d\n",resto[a].constante, resto[a].expoente);
             double constanteDivisor = (double)resto[a].constante / (double)primeiroTermo[0].constante;
+            printf("%d - %d\n",resto[a].expoente,primeiroTermo[0].expoente);
             int expoenteDivisor = resto[a].expoente - primeiroTermo[0].expoente;
             resultado[tamanho-expoenteDivisor-1].constante = constanteDivisor;
+            printf("Divisor encontrado: %.2fx%d\n",constanteDivisor,expoenteDivisor);
 
-            termo *temp1 = malloc(tamanho*sizeof(termo));
+            termo *temp1;
+            temp1 = malloc(tamanho*sizeof(termo));
             setTermos(temp1, tamanho);
             int j;
             for(j = 0;j < tamanho; j++){
 
-                if(t2[j].constante != 0){
+                if(t2[j].constante != (double)0){
 
                     int constante = constanteDivisor * t2[j].constante;
                     int expoente = expoenteDivisor + t2[j].expoente;
@@ -148,14 +172,17 @@ void divisao(termo *t1, termo *t2, termo *resultado, termo *resto, int tamanho){
                 }
             }
 
-            termo *temp2 = malloc(tamanho*sizeof(termo));
+            printf("Subtraindo resto pelo resultante...");
+            mostraPolinomio(resto, tamanho);
+            printf("Temp1: ");
+
+            mostraPolinomio(temp1, tamanho);
+
+            termo *temp2;
+            temp2 = malloc(tamanho*sizeof(termo));
             setTermos(temp2, tamanho);
             sub(resto, temp1, temp2, tamanho);
             termoCopy(temp2, resto, tamanho);
-
-            temp1 = NULL;
-            temp2 = NULL;
-
         }
     }
 
@@ -203,7 +230,7 @@ void mostraPolinomio(struct termo *t, int tamanho){
     int i = 0;
     for(i = 0; i < tamanho; i++){
 
-        if(t[i].constante != ((double)0)){
+        if(t[i].constante != 0){
             double fractionalPart =  fmod(t[i].constante, 1.0);
             if(fractionalPart == ((double)0))
                 printf("%+.0f", t[i].constante);
