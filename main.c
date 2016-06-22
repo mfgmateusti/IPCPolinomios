@@ -14,9 +14,20 @@ int main()
     char polinomio2[100];
 
     printf("Digite a operacao..\n1-Soma\n2-Subtracao\n3-Multiplicacao\n4-Divisao\n5-Sair\n");
-
-    int operacao = 4;
+    int operacao;
     scanf("%d", &operacao);
+
+    if(operacao == 5){
+        printf("Programa finalizado!");
+        return 0;
+    }
+    while(operacao > 5 || operacao < 0){
+        setbuf(stdin, NULL);
+        printf("Digite uma opcao valida!\n1-Soma\n2-Subtracao\n3-Multiplicacao\n4-Divisao\n5-Sair\n");
+        scanf("%d",&operacao);
+    }
+
+    printf("O polinomio deve ser digitado da seguinte forma 1xn....2x2-2x1+2\n");
     printf("Digite o primeiro polinomio: ");
     setbuf(stdin, NULL);
     scanf("%s",&polinomio1);
@@ -115,55 +126,6 @@ int main()
         }
     }
     return 0;
-}
-
-void divisao(termo *t1, termo *t2, termo *resultado, termo *resto, int tamanho){
-    termo *primeiroTermo;
-    primeiroTermo = malloc(sizeof(termo));
-    int primeiroT = 0;
-    int a;
-    for(a = 0; a < tamanho; a++){
-        if(t2[a].constante != 0){
-            primeiroTermo[0].constante = t2[a].constante;
-            primeiroTermo[0].expoente = t2[a].expoente;
-            primeiroT = a;
-            break;
-        }
-    }
-    termoCopy(t1, resto, tamanho);
-
-    for(a = 0; a < primeiroT+1; a++){
-        if(resto[a].constante != (double)0){
-
-            double constanteDivisor = (double)resto[a].constante / (double)primeiroTermo[0].constante;
-            int expoenteDivisor = resto[a].expoente - primeiroTermo[0].expoente;
-            resultado[tamanho-expoenteDivisor-1].constante = constanteDivisor;
-
-            termo *temp1;
-            temp1 = malloc(tamanho*sizeof(termo));
-            setTermos(temp1, tamanho);
-            int j;
-            for(j = 0;j < tamanho; j++){
-
-                if(t2[j].constante != (double)0){
-
-                    int constante = constanteDivisor * t2[j].constante;
-                    int expoente = expoenteDivisor + t2[j].expoente;
-                    int indice = tamanho-expoente-1;
-
-                    temp1[indice].constante += constante;
-                    temp1[indice].expoente = expoente;
-                }
-            }
-
-            termo *temp2;
-            temp2 = malloc(tamanho*sizeof(termo));
-            setTermos(temp2, tamanho);
-            sub(resto, temp1, temp2, tamanho);
-            termoCopy(temp2, resto, tamanho);
-        }
-    }
-
 }
 
 void termoCopy(termo *src, termo *dest, int size){
@@ -319,10 +281,7 @@ void sub(struct termo *t1, struct termo *t2, struct termo *resultado, int tamanh
     int i = 0;
     for(;i < tamanho; i++){
         resultado[i].expoente = t1[i].expoente;
-        //if(t1[i].constante == 0)
-        //    resultado[i].constante = t2[i].constante;
-        //else
-            resultado[i].constante = t1[i].constante - t2[i].constante;
+        resultado[i].constante = t1[i].constante - t2[i].constante;
     }
 
 }
@@ -344,5 +303,55 @@ void mult(struct termo *t1, struct termo *t2, struct termo *resultado, int taman
                 }
             }
         }
+
+}
+void divisao(termo *t1, termo *t2, termo *resultado, termo *resto, int tamanho){
+    termo *primeiroTermo;
+    primeiroTermo = malloc(sizeof(termo));
+    int primeiroT = 0;
+    int a;
+    for(a = 0; a < tamanho; a++){
+        if(t2[a].constante != 0){
+            primeiroTermo[0].constante = t2[a].constante;
+            primeiroTermo[0].expoente = t2[a].expoente;
+            primeiroT = a;
+            break;
+        }
+    }
+    termoCopy(t1, resto, tamanho);
+
+    for(a = 0; a < primeiroT+1; a++){
+        if(resto[a].constante != (double)0){
+
+            double constanteDivisor = (double)resto[a].constante / (double)primeiroTermo[0].constante;
+            int expoenteDivisor = resto[a].expoente - primeiroTermo[0].expoente;
+            resultado[tamanho-expoenteDivisor-1].constante = constanteDivisor;
+
+            termo *temp1;
+            temp1 = malloc(tamanho*sizeof(termo));
+            setTermos(temp1, tamanho);
+            int j;
+            for(j = 0;j < tamanho; j++){
+
+                if(t2[j].constante != (double)0){
+
+                    double constante = constanteDivisor * t2[j].constante;
+                    int expoente = expoenteDivisor + t2[j].expoente;
+                    int indice = tamanho-expoente-1;
+
+                    temp1[indice].constante += constante;
+                    temp1[indice].expoente = expoente;
+                }
+            }
+
+            termo *temp2;
+            temp2 = malloc(tamanho*sizeof(termo));
+            setTermos(temp2, tamanho);
+
+            sub(resto, temp1, temp2, tamanho);
+            termoCopy(temp2, resto, tamanho);
+
+        }
+    }
 
 }
